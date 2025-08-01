@@ -1,0 +1,39 @@
+response = Map();
+botMessage = null;
+userId = access.get("user_id");
+// adding user id in list to ignore auto respond Messages
+zuidlist = {887457021,2342344};
+
+if(zuidlist.notContains(userId))
+{
+	if(operation.equals("message_sent"))
+	{
+		// Get message details to check if it's a thread message
+		messageData = access.get("message");
+		isThreadMessage = false;
+		
+		// Check if this message has a thread_id (indicating it's part of a thread)
+		if(messageData != null && messageData.containsKey("thread_id") && messageData.get("thread_id") != null)
+		{
+			isThreadMessage = true;
+		}
+		
+		botMessage = "$USER_MENTION has sent a message.";
+		
+		// Replace the user mention placeholder
+		botMessage = botMessage.replaceAll("$USER_MENTION", "{@" + user.get("id") + "}");
+		
+		response.put("text", botMessage);
+		
+		// If it's a normal message (not in thread), reply in a thread
+		if(!isThreadMessage)
+		{
+			// Create a new thread for the reply
+			response.put("reply_to", messageData.get("id"));
+		}
+		// If it's already a thread message, reply normally (no thread creation)
+		
+		return response;
+	}
+}
+return response;
